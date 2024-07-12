@@ -7,8 +7,9 @@ const cardList = document.querySelector(".places__list");
 function createCard(card, f) {
     const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
     cardElement.querySelector('.card__title').textContent = card.name;
-    cardElement.querySelector('.card__image').src = card.link;
-    cardElement.querySelector('.card__image').alt = 'На картинке изображено место под названием '+ card.name;
+    const cardElementImage = cardElement.querySelector('.card__image');
+    cardElementImage.src = card.link;
+    cardElementImage.alt = 'На картинке изображено место под названием '+ card.name;
     cardElement.querySelector('.card__delete-button').addEventListener('click', f);
     return cardElement;
 }
