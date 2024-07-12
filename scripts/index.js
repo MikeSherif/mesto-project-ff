@@ -2,22 +2,23 @@
 const cardTemplate = document.querySelector("#card-template").content;
 // @todo: DOM узлы
 const addButton = document.querySelector(".profile__add-button");
-cardList = document.querySelector(".places__list");
+const cardList = document.querySelector(".places__list");
 // @todo: Функция создания карточки
-function createCard(cardTitle, cardImage) {
+function createCard(card, f) {
     const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
-    cardElement.querySelector('.card__title').textContent = cardTitle;
-    cardElement.querySelector('.card__image').src = cardImage;
-    cardElement.querySelector('.card__delete-button').addEventListener('click', Reset);
-    cardList.append(cardElement);
+    cardElement.querySelector('.card__title').textContent = card.name;
+    cardElement.querySelector('.card__image').src = card.link;
+    cardElement.querySelector('.card__image').alt = 'На картинке изображено место под названием '+ card.name;
+    cardElement.querySelector('.card__delete-button').addEventListener('click', f);
+    return cardElement;
 }
 // @todo: Функция удаления карточки
-function Reset(evt) {
+function resetButton(evt) {
     const eventTarget = evt.target;
-    eventTarget.parentElement.remove();
+    eventTarget.closest('.card').remove();
 }
 // @todo: Вывести карточки на страницу
 
 initialCards.forEach(function (card) {
-    createCard(card.name, card.link);
+    cardList.append(createCard(card, resetButton));
 });
