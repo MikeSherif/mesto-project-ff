@@ -1,5 +1,5 @@
 // @todo: Функция создания карточки
-import {closeModal} from "./modal";
+import {openModal} from "./modal";
 
 const cardTemplate = document.querySelector("#card-template").content;
 
@@ -24,18 +24,16 @@ function likeCard(evt) {
     evt.target.closest('.card__like-button').classList.toggle('card__like-button_is-active');
 }
 
+const popupImage = document.querySelector('.popup_type_image');
+const popupImageData = popupImage.querySelector('.popup__image');
+const popupImageCaption = popupImage.querySelector('.popup__caption');
+
 function openImagePopup(evt) {
-    const popupImage = document.querySelector('.popup_type_image');
-    popupImage.querySelector('.popup__image').src = evt.target.src;
-    popupImage.querySelector('.popup__image').alt = evt.target.alt;
-    popupImage.querySelector('.popup__caption').textContent = evt.target.alt.slice(43);
-    popupImage.classList.add('popup_is-opened');
-    popupImage.classList.remove('popup__close');
-    document.addEventListener('keydown', function (evt) {
-        if (evt.key === "Escape") {
-            popupImage.classList.remove('popup_is-opened');
-        }
-    });
+
+    popupImageData.src = evt.target.src;
+    popupImageData.alt = evt.target.alt;
+    popupImageCaption.textContent = evt.target.alt.slice(43);
+    openModal(popupImage);
 }
 
 export {createCard, deleteCard, likeCard, openImagePopup};
