@@ -3,12 +3,16 @@ import {openModal} from "./modal";
 
 const cardTemplate = document.querySelector("#card-template").content;
 
-function createCard(cardInfo, deleteCard, likeCard, openImagePopup) {
+function createCard(cardInfo, deleteCard, likeCard, openImagePopup, isCardMine) {
     const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
     cardElement.querySelector('.card__title').textContent = cardInfo.name;
     const cardElementImage = cardElement.querySelector('.card__image');
     cardElementImage.src = cardInfo.link;
     cardElementImage.alt = 'На картинке изображено место под названием ' + cardInfo.name;
+    const cardLikeCount = cardElement.querySelector('.card__like-counter');
+    cardLikeCount.textContent = cardInfo.likes.length;
+    const cardDeleteButton = cardElement.querySelector('.card__delete-button');
+    if (!isCardMine) { cardDeleteButton.style.display = 'none'; }
     cardElement.querySelector('.card__delete-button').addEventListener('click', deleteCard);
     cardElement.querySelector('.card__like-button').addEventListener('click', likeCard);
     cardElementImage.addEventListener('click', openImagePopup);
