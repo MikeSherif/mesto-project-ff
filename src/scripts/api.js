@@ -1,4 +1,4 @@
-const config = {
+export const config = {
     baseUrl: 'https://nomoreparties.co/v1/wff-cohort-18',
     headers: {
         authorization: 'b5b1b6e6-dc47-4f9d-9970-65fb7065b8ad',
@@ -6,22 +6,24 @@ const config = {
     }
 }
 
+const handleResponse = (response) => {
+    if (response.ok) {
+        return response.json();
+    }
+
+    // если ошибка, отклоняем промис
+    return Promise.reject(`Ошибка: ${response.status}`);
+}
+
 export const getInitialCards = () => {
     return fetch(`${config.baseUrl}/cards`, {
         headers: config.headers
     })
-        .then(res => {
-            if (res.ok) {
-                return res.json();
-            }
-
-            // если ошибка, отклоняем промис
-            return Promise.reject(`Ошибка: ${res.status}`);
-        });
+        .then(handleResponse);
 }
 
 export const handleFormProfileSubmitApi = (nameInput, jobInput) => {
-    fetch(`${config.baseUrl}/users/me`, {
+    return fetch(`${config.baseUrl}/users/me`, {
         method: 'PATCH',
         headers: config.headers,
         body: JSON.stringify({
@@ -29,48 +31,29 @@ export const handleFormProfileSubmitApi = (nameInput, jobInput) => {
             about: jobInput
         })
     })
-        .then(res => {
-            if (res.ok) {
-                return res.json();
-            }
-
-            // если ошибка, отклоняем промис
-            return Promise.reject(`Ошибка: ${res.status}`);
-        });
+        .then(handleResponse);
 }
 
 export const getMyInformation = () => {
     return fetch(`${config.baseUrl}/users/me`, {
         headers: config.headers,
     })
-        .then(res => {
-            if(res.ok) {
-                return res.json();
-            }
-        })
-
+        .then(handleResponse)
 }
 
 export const handleProfileAvatarSubmitApi = (avatarUrlInput) => {
-    fetch(`${config.baseUrl}/users/me/avatar`, {
+    return fetch(`${config.baseUrl}/users/me/avatar`, {
         method: 'PATCH',
         headers: config.headers,
         body: JSON.stringify({
             avatar: avatarUrlInput
         })
     })
-        .then(res => {
-            if (res.ok) {
-                return res.json();
-            }
-
-            // если ошибка, отклоняем промис
-            return Promise.reject(`Ошибка: ${res.status}`);
-        });
+        .then(handleResponse);
 }
 
 export const createNewCardApi = (cardName, cardLink) => {
-    fetch(`${config.baseUrl}/cards`, {
+    return fetch(`${config.baseUrl}/cards`, {
         method: 'POST',
         headers: config.headers,
         body: JSON.stringify({
@@ -78,17 +61,30 @@ export const createNewCardApi = (cardName, cardLink) => {
             link: cardLink
         })
     })
-        .then(res => {
-            if (res.ok) {
-                return res.json();
-            }
-
-            // если ошибка, отклоняем промис
-            return Promise.reject(`Ошибка: ${res.status}`);
-        });
+        .then(handleResponse);
 }
 
-export const deleteCardApi = () => {
+export const deleteCardApi = (cardId) => {
+    return fetch(`${config.baseUrl}/cards/${cardId}`, {
+        method: 'DELETE',
+        headers: config.headers,
+    })
+        .then(handleResponse);
+}
 
+export const likeCard = (cardId) => {
+    return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
+        method: 'PUT',
+        headers: config.headers,
+    })
+        .then(handleResponse);
+}
+
+export const unlikeCard = (cardId) => {
+    return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
+        method: 'DELETE',
+        headers: config.headers,
+    })
+        .then(handleResponse);
 }
 
