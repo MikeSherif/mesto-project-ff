@@ -17,41 +17,33 @@ function createCard(cardInfo, deleteCard, openImagePopup, openPopupCardConfirmDe
     if (cardInfo.owner.id !== userId) {
         cardDeleteButton.style.display = 'none';
     } else {
-        //cardDeleteButton.addEventListener('click', deleteCard);
         cardDeleteButton.addEventListener('click', openPopupCardConfirmDelete);
-
     }
-    //cardElement.querySelector('.card__delete-button').addEventListener('click', deleteCard);
     const cardLikeButton = cardElement.querySelector('.card__like-button');
     cardInfo.likes.forEach((like) => {
         if (like._id === userId) {
             cardLikeButton.classList.add('card__like-button_is-active');
         }
     })
-    cardLikeButton.addEventListener('click', () => {
-        if (cardLikeButton.classList.contains('card__like-button_is-active')) {
-            unlikeCard(cardInfo.id)
-                .then((response) => {
-                    cardLikeCount.textContent = response.likes.length;
-
-                })
-            cardLikeButton.classList.remove('card__like-button_is-active');
-        } else {
-            likeCard(cardInfo.id)
-                .then((response) => {
-                    cardLikeCount.textContent = response.likes.length;
-                })
-            cardLikeButton.classList.add('card__like-button_is-active');
-        }
-    });
+    cardLikeButton.addEventListener('click', cardLikeMethod);
     cardElementImage.addEventListener('click', openImagePopup);
     return cardElement;
 }
 
+function cardLikeMethod (evt) {
+    const likeMethod = evt.target.classList.contains('card__like-button_is-active') ? unlikeCard : likeCard;
+    likeMethod(evt.target.closest('.card').id)
+        .then((response) => {
+            evt.target.nextElementSibling.textContent = response.likes.length;
+            evt.target.classList.toggle('card__like-button_is-active');
+        })
+        .catch(err => console.log(err));
+}
+
 // @todo: Функция удаления карточки
 function deleteCard(evt) {
-    evt.target.closest('.card').remove();
     deleteCardApi(evt.target.closest('.card').id);
+    evt.target.closest('.card').remove();
 }
 
 

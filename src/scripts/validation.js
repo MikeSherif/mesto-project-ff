@@ -31,10 +31,14 @@ const hasInvalidInput = (inputList) => {
     })
 }
 
+const disableSubmitButton = (button, config) => {
+    button.classList.add(config);
+    button.setAttribute('disabled', true);
+}
+
 const toggleButtonState = (inputList, buttonElement, validationConfig) => {
     if (hasInvalidInput(inputList)) {
-        buttonElement.classList.add(validationConfig.inactiveButtonClass);
-        buttonElement.setAttribute('disabled', true);
+        disableSubmitButton(buttonElement,validationConfig.inactiveButtonClass )
     } else {
         buttonElement.classList.remove(validationConfig.inactiveButtonClass);
         buttonElement.removeAttribute('disabled');
@@ -66,12 +70,8 @@ export const enableValidation = (validationConfig) => {
 export const clearValidation = (formElement, validationConfig) => {
     const inputList = Array.from(formElement.querySelectorAll(`${validationConfig.inputElement}`));
     const buttonElement = formElement.querySelector(`${validationConfig.submitButtonSelector}`);
-    buttonElement.classList.add(validationConfig.inactiveButtonClass);
-    buttonElement.setAttribute('disabled', true);
+    disableSubmitButton(buttonElement,validationConfig.inactiveButtonClass )
     inputList.forEach((inputElement) => {
-        inputElement.removeEventListener('input', function () {
-            checkInputValidity(formElement, inputElement, validationConfig);
-            toggleButtonState(inputList, buttonElement, validationConfig);
-        });
+        hideInputError(formElement, inputElement, validationConfig);
     });
 }

@@ -29,6 +29,15 @@ const popupImageData = popupImage.querySelector('.popup__image');
 const popupImageCaption = popupImage.querySelector('.popup__caption');
 const popupCardConfirmDelete = document.querySelector(".popup_type_confirm_delete");
 
+const validationConfig = {
+    formSelector: '.popup__form',
+    inputElement: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button-inactive',
+    inputErrorClass: 'form__input_type_error',
+    errorClass: 'form__input-error_active'
+};
+
 //Функция открытия попапа по нажатию на картинку карточки
 function openImagePopup(evt) {
 
@@ -43,17 +52,19 @@ function openImagePopup(evt) {
 function openPopupCardConfirmDelete(evt) {
     openModal(popupCardConfirmDelete);
     const deleteData = evt;
-    popupCardConfirmDelete.querySelector('.popup__button').addEventListener('click', () => {
+    popupCardConfirmDelete.querySelector('.popup__button').onclick = () => {
         deleteCard(deleteData);
         closeModal(popupCardConfirmDelete);
-    });
+    };
 }
 
 function createUX(evt) {
-    setTimeout(() => {
         closeModal(evt.target.closest('.popup'));
         evt.target.querySelector('.popup__button').textContent = 'Сохранить';
-    }, 1000);
+}
+
+const changeButtonUX = (evt) => {
+    evt.target.querySelector('.popup__button').textContent = 'Сохранение...';
 }
 
 // @todo: Вывести карточки на страницу
@@ -79,14 +90,7 @@ Promise.all(promises)
         avatarImage.style.backgroundImage = `url('${results[0].avatar}')`;
     })
 
-enableValidation({
-    formSelector: '.popup__form',
-    inputElement: '.popup__input',
-    submitButtonSelector: '.popup__button',
-    inactiveButtonClass: 'popup__button-inactive',
-    inputErrorClass: 'form__input_type_error',
-    errorClass: 'form__input-error_active'
-});
+enableValidation(validationConfig);
 
 addButton.addEventListener("click", function (event) {
     openModal(popupNewCard);
@@ -94,14 +98,7 @@ addButton.addEventListener("click", function (event) {
 
 editButton.addEventListener("click", function (event) {
     openModal(popupEdit);
-    clearValidation(popupEdit, {
-        formSelector: '.popup__form',
-        inputElement: '.popup__input',
-        submitButtonSelector: '.popup__button',
-        inactiveButtonClass: 'popup__button-inactive',
-        inputErrorClass: 'form__input_type_error',
-        errorClass: 'form__input-error_active'
-    })
+    clearValidation(popupEdit, validationConfig)
 })
 
 editProfileAvatar.addEventListener("click", function (event) {
@@ -123,14 +120,10 @@ popups.forEach(function (element) {
     });
 })
 
-
 // Форма редактирования профиля
 const editProfileForm = popupEdit.querySelector('form[name=edit-profile]')// Воспользуйтесь методом querySelector()
 const nameInput = editProfileForm.querySelector('.popup__input_type_name');// Воспользуйтесь инструментом .querySelector()
 const jobInput = editProfileForm.querySelector('.popup__input_type_description');// Воспользуйтесь инструментом .querySelector()
-editProfileForm.querySelector('.popup__button').addEventListener('click', (evt) => {
-    evt.target.textContent = 'Сохранение...';
-})
 
 popupEdit.querySelector('.popup__close').addEventListener('click', function () {
     editProfileForm.reset();
@@ -146,7 +139,7 @@ function handleProfileFormSubmit(evt) {
 
     const name = nameInput.value;
     const job = jobInput.value;
-
+    changeButtonUX(evt);
     handleFormProfileSubmitApi(name, job)
         .then((res) => {
             profileTittle.textContent = res.name;
@@ -154,7 +147,10 @@ function handleProfileFormSubmit(evt) {
             nameInput.value = profileTittle.textContent;
             jobInput.value = profileDescription.textContent;
         })
-    createUX(evt);
+        .finally(() => {
+            createUX(evt);
+        });
+
 }
 
 editProfileForm.addEventListener('submit', handleProfileFormSubmit);
@@ -162,32 +158,19 @@ editProfileForm.addEventListener('submit', handleProfileFormSubmit);
 const addCardForm = document.querySelector('form[name=new-place]');
 const cardNameInput = addCardForm.querySelector('.popup__input_type_card-name');
 const cardUrlInput = addCardForm.querySelector('.popup__input_type_url');
-addCardForm.querySelector('.popup__button').addEventListener('click', (evt) => {
-    evt.target.textContent = 'Сохранение...';
-})
 
 function handleFormSubmitCard(evt) {
     evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.////
-
+    changeButtonUX(evt);
     createNewCardApi(cardNameInput.value, cardUrlInput.value)
         .then((res) => {
             cardList.prepend(createCard(res, deleteCard, openImagePopup, openPopupCardConfirmDelete, res.owner.id));
         })
-
-    clearValidation(addCardForm, {
-        formSelector: '.popup__form',
-        inputElement: '.popup__input',
-        submitButtonSelector: '.popup__button',
-        inactiveButtonClass: 'popup__button-inactive',
-        inputErrorClass: 'form__input_type_error',
-        errorClass: 'form__input-error_active'
-    });
-
-    createUX(evt);
-    setTimeout(() => {
-        addCardForm.reset();
-    }, 1000)
-
+        .finally(() => {
+            createUX(evt);
+        })
+    addCardForm.reset();
+    clearValidation(addCardForm, validationConfig);
 }
 
 addCardForm.addEventListener('submit', handleFormSubmitCard);
@@ -196,18 +179,20 @@ const profileEditAvatarForm = popupEditProfileAvatar.querySelector('form[name=ed
 const avatarUrlInput = profileEditAvatarForm.querySelector('.popup__input_type_avatar-url');
 const avatarImage = document.querySelector('.profile__image');
 
-profileEditAvatarForm.querySelector('.popup__button').addEventListener('click', (evt) => {
-    evt.target.textContent = 'Сохранение...';
-})
+
 
 function handleFormProfileSubmitAvatar(evt) {
     evt.preventDefault();
+    changeButtonUX(evt);
     handleProfileAvatarSubmitApi(avatarUrlInput.value)
         .then((res) => {
             avatarImage.style.backgroundImage = `url('${res.avatar}')`;
         })
+        .finally(()=> {
+            createUX(evt);
+        })
     profileEditAvatarForm.reset();
-    createUX(evt);
+
 }
 
 profileEditAvatarForm.addEventListener('submit', handleFormProfileSubmitAvatar);
