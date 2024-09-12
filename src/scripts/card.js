@@ -42,8 +42,10 @@ function cardLikeMethod (evt) {
 
 // @todo: Функция удаления карточки
 function deleteCard(evt) {
-    deleteCardApi(evt.target.closest('.card').id);
-    evt.target.closest('.card').remove();
+    deleteCardApi(evt.target.closest('.card').id)
+        .then(()=> {
+            evt.target.closest('.card').remove();
+        })
 }
 
 
